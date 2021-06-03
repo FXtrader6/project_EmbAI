@@ -1,3 +1,5 @@
+<!--jordi's test edit
+-->
 # EmbodiedAI 2020
 This repository contains the practical materials for the Embodied Artificial Intelligence course.
 
