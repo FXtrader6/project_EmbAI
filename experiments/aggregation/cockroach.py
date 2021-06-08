@@ -4,5 +4,6 @@ from simulation.utils import *
 
 
 class Cockroach(Agent):
-    """ """
+    """
+    """
     pass
