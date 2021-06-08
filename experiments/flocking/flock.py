@@ -94,7 +94,7 @@ class Flock(Swarm):  # also access methods from the super class Swarm
             np.zeros(2),
             np.zeros(2),
         )
-
+        #loop for calculating seperation
         for neigh in neighbors:
             neighbor_sum_v += neigh.v
             neighbor_sum_pos += neigh.pos
@@ -105,6 +105,6 @@ class Flock(Swarm):  # also access methods from the super class Swarm
                 difference
             )  # normalize to unit vector with respect to its maginiture
             separate += difference  # add the influences of all neighbors up
-
+        #return alignment, seperation, cohesion
         return neighbor_sum_v / len(neighbors), neighbor_sum_pos / len(neighbors), separate / len(neighbors)
 
