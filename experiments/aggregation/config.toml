@@ -1,6 +1,31 @@
 [base]
 swarm_type       = 'aggregation'
 
+n_agents = 40
+object_location  = [500, 500]
+shelter1_loc  = [300, 500]
+shelter2_loc  = [700, 500]
+
+[screen]
+frames = inf
+height = 1000
+width  = 1000
+
+[aggregation]
+convex    = true
+obstacles = true
+outside   = false
+
+[cockroach]
+#velocity force
+max_force         = 8.0
+#view of neighbor agents
+radius_view       = 85
+#weights for velocity forces
+alignment_weight  = 9.0
+cohesion_weight   = 5.0
+separation_weight = 1.0
+
 [agent]
 height    = 8
 width     = 10
@@ -9,5 +34,4 @@ mass      = 20
 max_speed = 7.0
 min_speed = 4.0
 
-[cockroach]
-radius_view = 10.0
+# Specification: https://toml.io/

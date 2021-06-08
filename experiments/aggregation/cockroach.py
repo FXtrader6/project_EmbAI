@@ -46,7 +46,7 @@ class Cockroach(Agent):
             force = self.wander(wander_dist, wander_radius, wander_angle)
         elif state == "still":
             self.max_speed, self.min_speed = 0, 0
-        elif state == "leave":
+        #elif state == "leave":
 
 
 
@@ -79,15 +79,15 @@ class Cockroach(Agent):
 
 
     def update_actions(self) -> None:
-        for obstacle in self.flock.objects.obstacles:
+        for obstacle in self.aggregation.objects.obstacles:
             collide = pygame.sprite.collide_mask(self, obstacle)
             if bool(collide):
                 self.avoid_obstacle()
 
-            if self.max_speed == 0:
+           # if self.max_speed == 0:
 
-                threading.Timer(1.0)
-                num_neighbors = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
-                p_leave = min(1, num_neighbors / 100 + leave_constant)
-                self.change_state(state="leave")
+                #threading.Timer(1.0)
+                #num_neighbors = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
+               # p_leave = min(1, num_neighbors / 100 + leave_constant)
+                #self.change_state(state="leave")
 
