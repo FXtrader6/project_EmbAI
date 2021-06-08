@@ -7,3 +7,5 @@ from simulation.swarm import Swarm
 class Aggregations(Swarm):
     """ """
     pass
+
+

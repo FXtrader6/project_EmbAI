@@ -89,7 +89,7 @@ class Boid(Agent):
         and separate force considering the total amount of neighbors close to the agent
         """
         # find all the neighbors of a boid based on its radius view
-        neighbors = self.flock.find_neighbors(self, config["boid"]["radius_view"])
+        neighbors = self.aggregations.find_neighbors(self, config["boid"]["radius_view"])
 
         #
         # if there are neighbors, estimate the influence of their forces
@@ -116,7 +116,7 @@ class Boid(Agent):
             neighbor_force (np.ndarray):
 
         """
-        return normalize(neighbor_force - self.v)
+        return normalize(neighbor_force - self.v) #align in average direction -ownvector (see figure)
 
     def cohesion(self, neighbor_center):
         """
