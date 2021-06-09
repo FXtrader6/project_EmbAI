@@ -83,7 +83,6 @@ class Cockroach(Agent):
     def update_actions(self) -> None:
         # calculate how many seconds
               # if more than 10 seconds close the game
-            self.timer +=1
             print(self.timer)
             #print(seconds)  # print how many seconds
             for obstacle in self.aggregation.objects.obstacles:
@@ -91,13 +90,10 @@ class Cockroach(Agent):
                 if bool(collide):
                     self.avoid_obstacle()
 
-            count = self.read_counter()
+
             for site in self.aggregation.objects.sites:
                 col = pygame.sprite.collide_mask(self, site)
                 if bool(col):
-                    self.write_counter(count)
-                    if count == 5:
-                        self.reset_counter()
                         self.min_speed = 0
                         self.max_speed = 0
 
@@ -111,32 +107,3 @@ class Cockroach(Agent):
                 #num_neighbors = len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
                # p_leave = min(1, num_neighbors / 100 + leave_constant)
                 #self.change_state(state="leave")
-
-    def reset_counter(self):
-        file = open(
-            r'experiments/aggregation/Counter.txt',
-            'r+')
-        file.seek(0)
-        file.truncate()
-        file.write('%d' % 0)
-        file.close()
-
-
-    def read_counter(self):
-        # Read Counter
-        file = open(
-            r'experiments/aggregation/Counter.txt')
-        read_input = file.read()
-        file.close()
-        count = int(read_input)
-        return count
-
-    def write_counter(self,count):
-        #count = self.read_counter()
-        file = open(
-            r'experiments/aggregation/Counter.txt',
-            'r+')
-        file.seek(0)
-        file.truncate()
-        file.write('%d' % (count + 1))
-        file.close()
