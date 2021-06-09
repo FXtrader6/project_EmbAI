@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+import random
 import time, threading
 from threading import Timer
 
@@ -55,24 +56,18 @@ class Cockroach(Agent):
 
 
 
-    def site_behavior(self) -> None:
-        for site in self.aggregations.objects.sites:
-            collide = pygame.sprite.collide_mask(self, site)
-            if bool(collide):
-                sensing = "site"
-        join_constant = 0.3
-        num_neighbors =  len(self.flock.find_neighbors(self, config["cockroach"]["radius_view"]))
-        p_join = min(1, num_neighbors / 100 + join_constant)
-
-        #join state
-        if sensing == "site" and p_join > np.random.rand() :
-            r = np.random.uniform(0, 0.5) #random noise
-            time.sleep(0.3 + r) #time function for join -> still
-            self.change_state(state="still")
-        else:
-            self.change_state(state="wander")
-
-            #join behavior
+    def site_behavior(self, behaviour = "join") -> None:
+        if behaviour == "join":
+            num_neighbors = len(self.aggregation.find_neighbors(self, config["cockroach"]["radius_view"]))
+            if num_neighbors <= 5:
+                p = 0.33
+            elif num_neighbors >= 5 <= 10:
+                p = 0.66
+            else:
+                p = 1
+            if random.random() < p:
+                self.min_speed = 0
+                self.max_speed = 0
 
 
 
@@ -83,7 +78,6 @@ class Cockroach(Agent):
     def update_actions(self) -> None:
         # calculate how many seconds
               # if more than 10 seconds close the game
-            print(self.timer)
             #print(seconds)  # print how many seconds
             for obstacle in self.aggregation.objects.obstacles:
                 collide = pygame.sprite.collide_mask(self, obstacle)
@@ -94,8 +88,10 @@ class Cockroach(Agent):
             for site in self.aggregation.objects.sites:
                 col = pygame.sprite.collide_mask(self, site)
                 if bool(col):
-                        self.min_speed = 0
-                        self.max_speed = 0
+                    self.timer += 1
+                    print(self.timer)
+                    if self.timer % 5 == 0:
+                        self.site_behavior()
 
 
 
