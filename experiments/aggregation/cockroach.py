@@ -43,7 +43,7 @@ class Cockroach(Agent):
     def change_state(self, state = "still") -> None:
 
         if state == "wander":
-            self.max_speed, self.min_speed = config["agent"]["max_speed"], config["agent"]["min_speed"]
+            self.max_speed, self.min_speed = 7.0, 4.0
         elif state == "still":
             self.max_speed, self.min_speed = 0, 0
         #elif state == "leave":
@@ -73,7 +73,7 @@ class Cockroach(Agent):
             else:
                 p = 0.33
             if random.random() < p:
-                print("OOOOOO00000000000000000000000OOOOOOOOO")
+                print("LEAVEEEEEEEEEEEEEEEEEEEEEE")
                 self.change_state(state="wander")
 
 
@@ -85,8 +85,6 @@ class Cockroach(Agent):
 
     def update_actions(self) -> None:
 
-              # if more than 10 seconds close the game
-            #print(seconds)  # print how many seconds
             for obstacle in self.aggregation.objects.obstacles:
                 collide = pygame.sprite.collide_mask(self, obstacle)
                 if bool(collide):
@@ -97,14 +95,16 @@ class Cockroach(Agent):
                 for site in self.aggregation.objects.sites:
                     col = pygame.sprite.collide_mask(self, site)
                     if bool(col):
+                        print("COLLIDEEEEEEEEEE")
                         self.timer += 1
                         #print(self.timer)
-                        if self.timer % 15 == 0:
+                        if self.timer % 35 == 0:
+                            print("JOIIIIIIIIIIIIIIN")
                             self.site_behavior()
 
             if self.min_speed == 0 and self.max_speed == 0:
                 self.timer2 += 1
-                print(self.timer2)
+                #print(self.timer2)
                 if self.timer2 % 15 == 0:
                     self.site_behavior(behaviour="leave")
 
