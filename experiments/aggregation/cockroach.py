@@ -31,6 +31,7 @@ class Cockroach(Agent):
         )
 
         self.aggregation = aggregate
+        self.timer = 0
         self.state = "wander"
 
 
@@ -82,7 +83,8 @@ class Cockroach(Agent):
     def update_actions(self) -> None:
         # calculate how many seconds
               # if more than 10 seconds close the game
-
+            self.timer +=1
+            print(self.timer)
             #print(seconds)  # print how many seconds
             for obstacle in self.aggregation.objects.obstacles:
                 collide = pygame.sprite.collide_mask(self, obstacle)
