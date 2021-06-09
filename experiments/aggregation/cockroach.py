@@ -43,9 +43,14 @@ class Cockroach(Agent):
     def change_state(self, state = "still") -> None:
 
         if state == "wander":
-            self.max_speed, self.min_speed = 7.0, 4.0
+            self.v = self.set_velocity()
+            steering_force = self.wander(10, 10, self.wandering_angle)
+            self.steering += truncate(
+                steering_force / self.mass, config["cockroach"]["max_force"]
+            )
         elif state == "still":
-            self.max_speed, self.min_speed = 0, 0
+            self.v *= 0
+            print (self.v)
         #elif state == "leave":
 
 
@@ -67,15 +72,14 @@ class Cockroach(Agent):
         elif behaviour == "leave":
             num_neighbors = len(self.aggregation.find_neighbors(self, config["cockroach"]["radius_view"]))
             if num_neighbors <= 5:
-                p = 0.8
+                p = 0.05
             elif num_neighbors >= 5 <= 10:
-                p = 0.66
+                p = 0.025
             else:
-                p = 0.33
+                p = 0.005
             if random.random() < p:
                 print("LEAVEEEEEEEEEEEEEEEEEEEEEE")
                 self.change_state(state="wander")
-
 
 
 
@@ -102,10 +106,10 @@ class Cockroach(Agent):
                             print("JOIIIIIIIIIIIIIIN")
                             self.site_behavior()
 
-            if self.min_speed == 0 and self.max_speed == 0:
+            if (self.v == 0).all():
                 self.timer2 += 1
                 #print(self.timer2)
-                if self.timer2 % 15 == 0:
+                if self.timer2 % 100 == 0:
                     self.site_behavior(behaviour="leave")
 
 
