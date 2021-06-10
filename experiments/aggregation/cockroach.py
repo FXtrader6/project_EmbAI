@@ -36,6 +36,7 @@ class Cockroach(Agent):
         self.timer2 = 0
         self.stop = False
         self.state = "wander"
+        self.on_site = False
 
 
 
@@ -46,11 +47,6 @@ class Cockroach(Agent):
             self.v = self.set_velocity()
         elif self.state == "still":
             self.v *= 0
-        #elif state == "leave":
-
-
-
-
 
 
     def site_behavior(self, behaviour = "join") -> None:
@@ -69,12 +65,15 @@ class Cockroach(Agent):
             num_neighbors = len(self.aggregation.find_neighbors(self, config["cockroach"]["radius_view"]))
             if num_neighbors <= 5:
                 p = 0.01
-            elif num_neighbors >= 5 <= 10:
+            elif num_neighbors >= 5 <= (0.25 * config["base"]["n_agents"]):
                 p = 0.005
+
             else:
-                p = 0.001
+                p = 0.00001
             if random.random() < p:
                 self.state = "wander"
+                #self.on_site = True
+                #self.timer = 0
                 self.change_state()
 
                 #self.change_state(state="wander")
@@ -98,11 +97,10 @@ class Cockroach(Agent):
             for site in self.aggregation.objects.sites:
                 col = pygame.sprite.collide_mask(self, site)
                 if bool(col):
-                    #print("COLLIDEEEEEEEEEE")
+
                     self.timer += 1
-                    #print(self.timer)
+
                     if self.timer % 35 == 0:
-                        #print("JOIIIIIIIIIIIIIIN")
                         self.site_behavior()
 
             if self.state == "still":

@@ -17,7 +17,7 @@ outside   = false
 #velocity force
 max_force         = 8.0
 #view of neighbor agents
-radius_view       = 120
+radius_view       = 60
 #weights for velocity forces
 alignment_weight  = 1.8
 cohesion_weight   = 0.5
