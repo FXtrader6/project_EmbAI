@@ -34,6 +34,7 @@ class Cockroach(Agent):
         self.aggregation = aggregate
         self.timer = 0
         self.timer2 = 0
+        self.timer3 = 0
         self.stop = False
         self.state = "wander"
         self.on_site = False
@@ -64,15 +65,20 @@ class Cockroach(Agent):
         elif behaviour == "leave":
             num_neighbors = len(self.aggregation.find_neighbors(self, config["cockroach"]["radius_view"]))
             if num_neighbors <= 5:
-                p = 0.01
-            elif num_neighbors >= 5 <= (0.25 * config["base"]["n_agents"]):
-                p = 0.005
+                p_leave = min(1, (0.4 * num_neighbors + 1)/config["base"]["n_agents"])
+
+            elif num_neighbors >= (0.25 * config["base"]["n_agents"]) <= (0.5 * config["base"]["n_agents"]):
+                p_leave = min(1, (0.6 * num_neighbors + 1)/config["base"]["n_agents"])
+
+            # 1 ----> num_neighbors >= 0.25 * config["base"]["n_agents"] <= (0.5 * config["base"]["n_agents"]):
 
             else:
-                p = 0.00001
-            if random.random() < p:
+                p_leave = min(1, (0.01 * num_neighbors + 1)/config["base"]["n_agents"])
+            if random.random() < p_leave:
                 self.state = "wander"
-                #self.on_site = True
+                self.timer3 += 1
+
+                self.on_site = True
                 #self.timer = 0
                 self.change_state()
 
@@ -101,7 +107,11 @@ class Cockroach(Agent):
                     self.timer += 1
 
                     if self.timer % 35 == 0:
-                        self.site_behavior()
+                        if self.on_site == False:
+                            self.site_behavior()
+            if self.timer3 > 20:
+                self.on_site = False
+                self.timer3 = 0
 
             if self.state == "still":
                 self.timer2 += 1
