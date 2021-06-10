@@ -111,15 +111,21 @@ class Cockroach(Agent):
                     if self.timer % 35 == 0:
                         if self.on_site == False:
                             self.site_behavior()
-            if self.timer3 > 20:
+                            self.timer = 0
+
+            if self.timer3 >= 1:
+                self.timer3 +=1
+                #print(self.timer3)
+            if self.timer3 > 250:
                 self.on_site = False
                 self.timer3 = 0
 
             if self.state == "still":
                 self.timer2 += 1
                 #print(self.timer2)
-                if self.timer2 % 40 == 0:
+                if self.timer2 % 500 == 0:
                     self.site_behavior(behaviour="leave")
+                    self.timer2 = 0
 
 
 
