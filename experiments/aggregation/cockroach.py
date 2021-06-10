@@ -35,6 +35,7 @@ class Cockroach(Agent):
         self.t_join = 0
         self.t_attempt_leave = 0
         self.t_leave_site = 0
+        self.roach_timer = 0
         self.stop = False
         self.state = "wander"
         self.on_site = False
@@ -95,6 +96,10 @@ class Cockroach(Agent):
 
 
     def update_actions(self) -> None:
+            self.roach_timer += 1
+            if self.roach_timer % 5000 ==0:
+                time.sleep(45)
+
 
             for obstacle in self.aggregation.objects.obstacles:
                 collide = pygame.sprite.collide_mask(self, obstacle)
