@@ -40,12 +40,12 @@ class Cockroach(Agent):
 
 
 
-    def change_state(self, state = "still") -> None:
+    def change_state(self) -> None:
 
-        if state == "wander":
-            self.max_speed, self.min_speed = 7.0, 4.0
-        elif state == "still":
-            self.max_speed, self.min_speed = 0, 0
+        if self.state == "wander":
+            self.v = self.set_velocity()
+        elif self.state == "still":
+            self.v *= 0
         #elif state == "leave":
 
 
@@ -63,18 +63,21 @@ class Cockroach(Agent):
             else:
                 p = 0.8
             if random.random() < p:
+               self.state = "still"
                self.change_state()
         elif behaviour == "leave":
             num_neighbors = len(self.aggregation.find_neighbors(self, config["cockroach"]["radius_view"]))
             if num_neighbors <= 5:
-                p = 0.8
+                p = 0.01
             elif num_neighbors >= 5 <= 10:
-                p = 0.66
+                p = 0.005
             else:
-                p = 0.33
+                p = 0.001
             if random.random() < p:
-                print("LEAVEEEEEEEEEEEEEEEEEEEEEE")
-                self.change_state(state="wander")
+                self.state = "wander"
+                self.change_state()
+
+                #self.change_state(state="wander")
 
 
 
@@ -90,22 +93,22 @@ class Cockroach(Agent):
                 if bool(collide):
                     self.avoid_obstacle()
 
-            if self.min_speed != 0 and self.max_speed != 0 and self.timer2 == 0:
+            #if self.min_speed != 0 and self.max_speed != 0 and self.timer2 == 0:
 
-                for site in self.aggregation.objects.sites:
-                    col = pygame.sprite.collide_mask(self, site)
-                    if bool(col):
-                        print("COLLIDEEEEEEEEEE")
-                        self.timer += 1
-                        #print(self.timer)
-                        if self.timer % 35 == 0:
-                            print("JOIIIIIIIIIIIIIIN")
-                            self.site_behavior()
+            for site in self.aggregation.objects.sites:
+                col = pygame.sprite.collide_mask(self, site)
+                if bool(col):
+                    #print("COLLIDEEEEEEEEEE")
+                    self.timer += 1
+                    #print(self.timer)
+                    if self.timer % 35 == 0:
+                        #print("JOIIIIIIIIIIIIIIN")
+                        self.site_behavior()
 
-            if self.min_speed == 0 and self.max_speed == 0:
+            if self.state == "still":
                 self.timer2 += 1
                 #print(self.timer2)
-                if self.timer2 % 15 == 0:
+                if self.timer2 % 40 == 0:
                     self.site_behavior(behaviour="leave")
 
 
