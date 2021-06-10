@@ -65,15 +65,17 @@ class Cockroach(Agent):
         elif behaviour == "leave":
             num_neighbors = len(self.aggregation.find_neighbors(self, config["cockroach"]["radius_view"]))
             if num_neighbors <= 5:
-                p_leave = min(1, (0.4 * num_neighbors + 1)/config["base"]["n_agents"])
+                p_leave = min(1, (0.4 * num_neighbors + 1) / config["base"]["n_agents"])
 
-            elif num_neighbors >= (0.25 * config["base"]["n_agents"]) <= (0.5 * config["base"]["n_agents"]):
-                p_leave = min(1, (0.6 * num_neighbors + 1)/config["base"]["n_agents"])
+            elif (0.25 * config["base"]["n_agents"]) >= num_neighbors <= (0.5 * config["base"]["n_agents"]):
+                p_leave = min(1, (0.6 * num_neighbors + 1) / config["base"]["n_agents"])
 
-            # 1 ----> num_neighbors >= 0.25 * config["base"]["n_agents"] <= (0.5 * config["base"]["n_agents"]):
-
+            # 1 ----> (0.25 * config["base"]["n_agents"]) >= num_neighbors <= (0.5 * config["base"]["n_agents"]):
+            # 2 ----> (0.4 * config["base"]["n_agents"]) >= num_neighbors <= (0.65 * config["base"]["n_agents"]):
+            # 3 ----> (0.35 * config["base"]["n_agents"]) >= num_neighbors <= (0.6 * config["base"]["n_agents"]):
+            # 4 ----> (0.35 * config["base"]["n_agents"]) >= num_neighbors <= (0.6 * config["base"]["n_agents"]):
             else:
-                p_leave = min(1, (0.01 * num_neighbors + 1)/config["base"]["n_agents"])
+                p_leave = min(1, (0.01 * num_neighbors + 1) / config["base"]["n_agents"])
             if random.random() < p_leave:
                 self.state = "wander"
                 self.timer3 += 1
