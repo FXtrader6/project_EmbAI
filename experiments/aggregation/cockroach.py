@@ -56,28 +56,28 @@ class Cockroach(Agent):
         if behaviour == "join":
             num_neighbors = len(self.aggregation.find_neighbors(self, config["cockroach"]["radius_view"]))
             if num_neighbors <= 5:
-                p_join = min(1, (0.5 * num_neighbors + 1) / (0.5 * self.n_agents))
-            elif (0.25 * self.n_agents) >= num_neighbors <= (0.5 * self.n_agents):
-                p_join = min(1, (0.8 * num_neighbors + 1) / (0.5 * self.n_agents))
+                p_join = 0.5
+            elif 5 <= num_neighbors <= 10:
+                p_join = 0.8
             else:
-                p_join = min(1, (1 * num_neighbors + 1) / (0.5 * self.n_agents))
+                p_join = 0.99
             if random.random() < p_join:
                self.state = "still"
                self.change_state()
         elif behaviour == "leave":
             num_neighbors = len(self.aggregation.find_neighbors(self, config["cockroach"]["radius_view"]))
             if num_neighbors <= 5:
-                p_leave = min(1, (0.4 * num_neighbors + 1) / self.n_agents)
+                p_leave = 0.4
 
-            elif (0.25 * self.n_agents) >= num_neighbors <= (0.5 * self.n_agents):
-                p_leave = min(1, (0.6 * num_neighbors + 1) / self.n_agents)
+            elif 5 <= num_neighbors <= 10:
+                p_leave = 0.2
 
             # 1 ----> (0.25 * config["base"]["n_agents"]) >= num_neighbors <= (0.5 * config["base"]["n_agents"]):
             # 2 ----> (0.4 * config["base"]["n_agents"]) >= num_neighbors <= (0.65 * config["base"]["n_agents"]):
             # 3 ----> (0.35 * config["base"]["n_agents"]) >= num_neighbors <= (0.6 * config["base"]["n_agents"]):
             # 4 ----> (0.35 * config["base"]["n_agents"]) >= num_neighbors <= (0.6 * config["base"]["n_agents"]):
             else:
-                p_leave = min(1, (0.01 * num_neighbors + 1) / config["base"]["n_agents"])
+                p_leave = 0.1
             if random.random() < p_leave:
                 self.state = "wander"
                 self.t_leave_site += 1
@@ -97,7 +97,7 @@ class Cockroach(Agent):
 
     def update_actions(self) -> None:
             self.roach_timer += 1
-            if self.roach_timer % 5000 ==0:
+            if self.roach_timer % 9000 ==0:
                 time.sleep(45)
 
 
