@@ -32,12 +32,13 @@ class Cockroach(Agent):
         )
 
         self.aggregation = aggregate
-        self.timer = 0
-        self.timer2 = 0
-        self.timer3 = 0
+        self.t_join = 0
+        self.t_attempt_leave = 0
+        self.t_leave_site = 0
         self.stop = False
         self.state = "wander"
         self.on_site = False
+        self.n_agents = config["base"]["n_agents"]
 
 
 
@@ -54,21 +55,21 @@ class Cockroach(Agent):
         if behaviour == "join":
             num_neighbors = len(self.aggregation.find_neighbors(self, config["cockroach"]["radius_view"]))
             if num_neighbors <= 5:
-               p = 0.33
-            elif num_neighbors >= 5 <= 10:
-               p = 0.66
+                p_join = min(1, (0.5 * num_neighbors + 1) / (0.5 * self.n_agents))
+            elif (0.25 * self.n_agents) >= num_neighbors <= (0.5 * self.n_agents):
+                p_join = min(1, (0.8 * num_neighbors + 1) / (0.5 * self.n_agents))
             else:
-                p = 0.8
-            if random.random() < p:
+                p_join = min(1, (1 * num_neighbors + 1) / (0.5 * self.n_agents))
+            if random.random() < p_join:
                self.state = "still"
                self.change_state()
         elif behaviour == "leave":
             num_neighbors = len(self.aggregation.find_neighbors(self, config["cockroach"]["radius_view"]))
             if num_neighbors <= 5:
-                p_leave = min(1, (0.4 * num_neighbors + 1) / config["base"]["n_agents"])
+                p_leave = min(1, (0.4 * num_neighbors + 1) / self.n_agents)
 
-            elif (0.25 * config["base"]["n_agents"]) >= num_neighbors <= (0.5 * config["base"]["n_agents"]):
-                p_leave = min(1, (0.6 * num_neighbors + 1) / config["base"]["n_agents"])
+            elif (0.25 * self.n_agents) >= num_neighbors <= (0.5 * self.n_agents):
+                p_leave = min(1, (0.6 * num_neighbors + 1) / self.n_agents)
 
             # 1 ----> (0.25 * config["base"]["n_agents"]) >= num_neighbors <= (0.5 * config["base"]["n_agents"]):
             # 2 ----> (0.4 * config["base"]["n_agents"]) >= num_neighbors <= (0.65 * config["base"]["n_agents"]):
@@ -78,7 +79,7 @@ class Cockroach(Agent):
                 p_leave = min(1, (0.01 * num_neighbors + 1) / config["base"]["n_agents"])
             if random.random() < p_leave:
                 self.state = "wander"
-                self.timer3 += 1
+                self.t_leave_site += 1
 
                 self.on_site = True
                 #self.timer = 0
@@ -106,26 +107,26 @@ class Cockroach(Agent):
                 col = pygame.sprite.collide_mask(self, site)
                 if bool(col):
 
-                    self.timer += 1
+                    self.t_join += 1
 
-                    if self.timer % 35 == 0:
+                    if self.t_join % 35 == 0:
                         if self.on_site == False:
                             self.site_behavior()
-                            self.timer = 0
+                            self.t_join = 0
 
-            if self.timer3 >= 1:
-                self.timer3 +=1
+            if self.t_leave_site >= 1:
+                self.t_leave_site +=1
                 #print(self.timer3)
-            if self.timer3 > 250:
+            if self.t_leave_site > 250:
                 self.on_site = False
-                self.timer3 = 0
+                self.t_leave_site = 0
 
             if self.state == "still":
-                self.timer2 += 1
+                self.t_attempt_leave += 1
                 #print(self.timer2)
-                if self.timer2 % 500 == 0:
+                if self.t_attempt_leave % 500 == 0:
                     self.site_behavior(behaviour="leave")
-                    self.timer2 = 0
+                    self.t_attempt_leave = 0
 
 
 
