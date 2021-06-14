@@ -7,7 +7,6 @@ from simulation.agent import Agent
 from experiments.covid.config import config
 from simulation.utils import *
 
-
 class Person(Agent):
     """ """
     def __init__(
@@ -26,7 +25,8 @@ class Person(Agent):
             dT=config["agent"]["dt"],
             index=index
         )
-
+        self.width = config["agent"]["width"]
+        self.height = config["agent"]["height"]
         self.population = population
         self.t_join = 0
         self.t_attempt_leave = 0
@@ -85,8 +85,11 @@ class Person(Agent):
             #leave
 
 
-
     def update_actions(self) -> None:
+            self.roach_timer += 1
+            if self.roach_timer == 600:
+               self.image = image_with_rect( #change image
+                    "experiments/covid/images/blue.png", [self.width, self.height])[0]
 
             for obstacle in self.population.objects.obstacles:
                 collide = pygame.sprite.collide_mask(self, obstacle)
