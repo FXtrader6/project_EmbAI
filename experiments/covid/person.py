@@ -87,10 +87,6 @@ class Person(Agent):
 
 
     def update_actions(self) -> None:
-            self.roach_timer += 1
-            if self.roach_timer % 6000 == 0:
-                time.sleep(45)
-
 
             for obstacle in self.population.objects.obstacles:
                 collide = pygame.sprite.collide_mask(self, obstacle)
