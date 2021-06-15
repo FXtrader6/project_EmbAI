@@ -10,7 +10,7 @@ from simulation.utils import *
 class Person(Agent):
     """ """
     def __init__(
-            self, pos, v, population, index: int, image: str = "experiments/covid/images/corona.png"
+            self, pos, v, population, index: int, image : str ="experiments/covid/images/corona.png"
     ) -> None:
 
         super(Person, self).__init__(
@@ -87,14 +87,22 @@ class Person(Agent):
 
     def update_actions(self) -> None:
             self.roach_timer += 1
-            if self.roach_timer == 600:
-               self.image = image_with_rect( #change image
-                    "experiments/covid/images/blue.png", [self.width, self.height])[0]
+            #if self.roach_timer == 600:
+             #  self.image = image_with_rect( #change image
+              #      "experiments/covid/images/blue.png", [self.width, self.height])[0]
+            if self.roach_timer >= 600:
+                num_neighbors = (self.population.find_neighbors(self, config["person"]["radius_view"]))
+                for neighbor in num_neighbors:
+                    coll = pygame.sprite.collide_mask(self, neighbor)
+                    if bool(coll):
+                        self.image = image_with_rect(  # change image
+                        "experiments/covid/images/blue.png", [self.width, self.height])[0]
 
             for obstacle in self.population.objects.obstacles:
                 collide = pygame.sprite.collide_mask(self, obstacle)
                 if bool(collide):
                     self.avoid_obstacle()
+
 
             #if self.min_speed != 0 and self.max_speed != 0 and self.timer2 == 0:
 
