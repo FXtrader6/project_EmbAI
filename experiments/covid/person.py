@@ -10,7 +10,7 @@ from simulation.utils import *
 class Person(Agent):
     """ """
     def __init__(
-            self, pos, v, population, index: int, image : str ="experiments/covid/images/corona.png"
+            self, pos, v, population, index: int, image : str ="experiments/covid/images/blue.png"
     ) -> None:
 
         super(Person, self).__init__(
@@ -33,7 +33,7 @@ class Person(Agent):
         self.t_leave_site = 0
         self.roach_timer = 0
         self.stop = False
-        self.state = "wander"
+        self.state = "susceptible"
         self.on_site = False
         self.n_agents = config["base"]["n_agents"]
 
@@ -42,10 +42,16 @@ class Person(Agent):
 
     def change_state(self) -> None:
 
-        if self.state == "wander":
-            self.v = self.set_velocity()
-        elif self.state == "still":
-            self.v *= 0
+        if self.state == "infectious":
+            image = image_with_rect( #change image
+                    "experiments/covid/images/corona.png", [self.width, self.height])[0]
+        elif self.state == "susceptible":
+            image = image_with_rect(  # change image
+                "experiments/covid/images/blue.png", [self.width, self.height])[0]
+        else:
+            image = image_with_rect(  # change image
+                "experiments/covid/images/green.png", [self.width, self.height])[0]
+        return image
 
 
     def site_behavior(self, behaviour = "join") -> None:
@@ -86,22 +92,23 @@ class Person(Agent):
 
 
     def update_actions(self) -> None:
+
             self.roach_timer += 1
             #if self.roach_timer == 600:
              #  self.image = image_with_rect( #change image
               #      "experiments/covid/images/blue.png", [self.width, self.height])[0]
-            if self.roach_timer >= 600:
+            if random.random < 0.2:
                 num_neighbors = (self.population.find_neighbors(self, config["person"]["radius_view"]))
                 for neighbor in num_neighbors:
-                    coll = pygame.sprite.collide_mask(self, neighbor)
-                    if bool(coll):
-                        self.image = image_with_rect(  # change image
-                        "experiments/covid/images/blue.png", [self.width, self.height])[0]
+                    neighbor.state= "infectious"
+                    neighbor.image = self.change_state()
 
             for obstacle in self.population.objects.obstacles:
                 collide = pygame.sprite.collide_mask(self, obstacle)
                 if bool(collide):
+                    #self.image = self.change_state()
                     self.avoid_obstacle()
+                    self.image = self.change_state()
 
 
             #if self.min_speed != 0 and self.max_speed != 0 and self.timer2 == 0:
