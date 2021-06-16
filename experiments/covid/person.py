@@ -106,19 +106,23 @@ class Person(Agent):
     def update_actions(self) -> None:
             #print(self.type)
             #infection timer to recover
+
+            #self.population.add_point(self.listo)
+
             if self.state == "I":
                 self.rec_timer += 1
-            print(self.rec_timer)
+
+            # infection timer to recover
             if self.rec_timer == 2000:
                 self.state = "R"
                 self.image = self.change_state()
-                #self.rec_timer = 0
+                self.rec_timer = 0
 
             # infect susceptible neighbors
-            if self.state == "I":
+            if self.state == "I" and random.random() < 0.20:
                 num_neighbors = (self.population.find_neighbors(self, config["person"]["radius_view"]))
                 for neighbor in num_neighbors:
-                    if neighbor.state == "S" and random.random() < 0.005:
+                    if neighbor.state == "S":
                         neighbor.state = "I"
                         neighbor.image = self.change_state()
 

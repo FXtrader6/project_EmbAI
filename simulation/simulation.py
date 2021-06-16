@@ -9,6 +9,7 @@ from typing import Union, Tuple
 from experiments.aggregation.aggregation import Aggregations
 from experiments.covid.population import Population
 from experiments.flocking.flock import Flock
+from datetime import datetime
 
 
 def _plot_covid(data) -> None:
@@ -19,8 +20,10 @@ def _plot_covid(data) -> None:
     ----
         data:
     """
+    now = datetime.now()
+    current_time = now.strftime("%H-%M-%S")
     output_name = "experiments/covid/plots/Covid-19-SIR%s.png" % time.strftime(
-        "-%m.%d.%y-%H:%M", time.localtime()
+        "-%m.%d.%y-%H-%M-%S", time.localtime()
     )
     fig = plt.figure()
     plt.plot(data["S"], label="Susceptible", color=(1, 0.5, 0))  # Orange

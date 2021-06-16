@@ -38,7 +38,7 @@ class Swarm(pygame.sprite.Sprite):
         self.agents: list = []
         self.screen = screen_size
         self.objects: Objects = Objects()
-        self.points_to_plot = plot
+        self.points_to_plot = {"S" : [],"I": [],"R": []}
         self.datapoints: list = []
 
     def add_agent(self, agent: Agent) -> None:
@@ -127,6 +127,13 @@ class Swarm(pygame.sprite.Sprite):
         """
         # update the movement
         self.datapoints = []
+        for agent in self.agents:
+            if agent.state == "S":
+                self.datapoints.append("S")
+            elif agent.state == "I":
+                self.datapoints.append("I")
+            else:
+                self.datapoints.append("R")
         for agent in self.agents:
             agent.update_actions()
 
