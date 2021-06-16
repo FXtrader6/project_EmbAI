@@ -19,7 +19,7 @@ def _plot_covid(data) -> None:
     ----
         data:
     """
-    output_name = "experiments/covid/plots/Covid-19-SIR%s.png" % time.strftime(
+    output_name = "C:/Users/vveen/OneDrive/AI BSC 2/embodied AI/project_EmbAI/experiments/covid/plots/Covid-19-SIR%s.png" % time.strftime(
         "-%m.%d.%y-%H:%M", time.localtime()
     )
     fig = plt.figure()
