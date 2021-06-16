@@ -38,9 +38,9 @@ class Population(Swarm):
         # To Do
         # code snipet (not complete) to avoid initializing agents on obstacles
         # given some coordinates and obstacles in the environment, this repositions the agent
-        for index, agent in enumerate(range(num_agents - 4)):
+        for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
-            print(coordinates)
+            #print(coordinates)
             if config["population"]["obstacles"]:  # you need to define this variable
                 for obj in self.objects.obstacles:
                     rel_coordinate = relative(
@@ -58,4 +58,8 @@ class Population(Swarm):
                     except IndexError:
                         pass
 
-            self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index))
+            if index < 16:
+             self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state= "S"))
+            else:
+                self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state="I"))
+

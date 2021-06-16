@@ -10,9 +10,8 @@ from simulation.utils import *
 class Person(Agent):
     """ """
     def __init__(
-            self, pos, v, population, index: int, image : str ="experiments/covid/images/blue.png"
+            self, pos, v, population, state, index: int, image:str = "experiments/covid/images/blue.png"
     ) -> None:
-
         super(Person, self).__init__(
             pos,
             v,
@@ -25,28 +24,39 @@ class Person(Agent):
             dT=config["agent"]["dt"],
             index=index
         )
+        self.prev_pos = None
+        self.prev_v = None
         self.width = config["agent"]["width"]
         self.height = config["agent"]["height"]
         self.population = population
         self.t_join = 0
         self.t_attempt_leave = 0
         self.t_leave_site = 0
-        self.roach_timer = 0
-        self.initialization_timer = 0
+        self.rec_timer = 0
+        self.init_timer = 0
         self.stop = False
-        self.state = "susceptible"
+        self.avoided_obstacles: bool = False
+        self.state = state
         self.on_site = False
         self.n_agents = config["base"]["n_agents"]
+
+
+        if state == "S":
+            self.image = image_with_rect( #change image
+                    "experiments/covid/images/blue.png", [self.width, self.height])[0]
+        elif state == "I":
+            self.image = image_with_rect( #change image
+                    "experiments/covid/images/corona.png", [self.width, self.height])[0]
 
 
 
 
     def change_state(self) -> None:
 
-        if self.state == "infectious":
+        if self.state == "I":
             image = image_with_rect( #change image
                     "experiments/covid/images/corona.png", [self.width, self.height])[0]
-        elif self.state == "susceptible":
+        elif self.state == "S":
             image = image_with_rect(  # change image
                 "experiments/covid/images/blue.png", [self.width, self.height])[0]
         else:
@@ -56,6 +66,7 @@ class Person(Agent):
 
 
     def site_behavior(self, behaviour = "join") -> None:
+        #print(self.type)
         if behaviour == "join":
             num_neighbors = len(self.population.find_neighbors(self, config["cockroach"]["radius_view"]))
             if num_neighbors <= 5:
@@ -93,24 +104,47 @@ class Person(Agent):
 
 
     def update_actions(self) -> None:
-            self.roach_timer += 1
-            if random.random() < 0.005 and self.roach_timer < 50:
-                self.state = "infectious"
+            #print(self.type)
+            #infection timer to recover
+            if self.state == "I":
+                self.rec_timer += 1
+
+            if self.rec_timer == 2000:
+                self.state = "R"
                 self.image = self.change_state()
 
-            if self.state == "infectious" and random.random() < 0.2:
+            # infect susceptible neighbors
+            if self.state == "I" and random.random() < 0.5:
                 num_neighbors = (self.population.find_neighbors(self, config["person"]["radius_view"]))
                 for neighbor in num_neighbors:
-                    neighbor.state= "infectious"
-                    neighbor.image = self.change_state()
+                    if neighbor.state == "S":
+                        neighbor.state = "I"
+                        neighbor.image = self.change_state()
 
+            #avoid obstacles
             for obstacle in self.population.objects.obstacles:
                 collide = pygame.sprite.collide_mask(self, obstacle)
                 if bool(collide):
-                    #self.image = self.change_state()
+                    # If boid gets stuck because when avoiding the obstacle ended up inside of the object,
+                    # resets the position to the previous one and do a 180 degree turn back
+                    if not self.avoided_obstacles:
+                        self.prev_pos = self.pos.copy()
+                        self.prev_v = self.v.copy()
+
+                    else:
+                        self.pos = self.prev_pos.copy()
+                        self.v = self.prev_v.copy()
+
+                    self.avoided_obstacles = True
                     self.avoid_obstacle()
                     self.image = self.change_state()
+                    return
+            self.prev_v = None
+            self.prev_pos = None
 
+            self.avoided_obstacles = False
+
+            #
 
             #if self.min_speed != 0 and self.max_speed != 0 and self.timer2 == 0:
 

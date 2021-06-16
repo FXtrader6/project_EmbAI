@@ -15,11 +15,9 @@ def _plot_covid(data) -> None:
     """
     Plot the data related to the covid experiment. The plot is based on the number of Susceptible,
     Infected and Recovered agents
-
     Args:
     ----
         data:
-
     """
     output_name = "experiments/covid/plots/Covid-19-SIR%s.png" % time.strftime(
         "-%m.%d.%y-%H:%M", time.localtime()
@@ -99,13 +97,11 @@ class Simulation:
 
     def plot_simulation(self) -> None:
         """Depending on the type of experiment, plots the final data accordingly"""
-        if self.swarm_type == "Covid":
+        if self.swarm_type == "covid":
             _plot_covid(self.swarm.points_to_plot)
-
-        elif self.swarm_type == "Flock":
+        elif self.swarm_type == "flock":
             _plot_flock()
-
-        elif self.swarm_type == "Aggregation":
+        elif self.swarm_type == "aggregation":
             _plot_aggregation()
 
     def initialize(self) -> None:
@@ -141,9 +137,9 @@ class Simulation:
         if self.iter == float("inf"):
 
             while self.running:
-                init = time.time()
+                # init = time.time()
                 self.simulate()
-                #print(time.time() - init)
+                # print(time.time() - init)
 
             self.plot_simulation()
         else:
