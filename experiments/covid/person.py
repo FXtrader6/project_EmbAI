@@ -108,16 +108,17 @@ class Person(Agent):
             #infection timer to recover
             if self.state == "I":
                 self.rec_timer += 1
-
+            print(self.rec_timer)
             if self.rec_timer == 2000:
                 self.state = "R"
                 self.image = self.change_state()
+                #self.rec_timer = 0
 
             # infect susceptible neighbors
-            if self.state == "I" and random.random() < 0.5:
+            if self.state == "I":
                 num_neighbors = (self.population.find_neighbors(self, config["person"]["radius_view"]))
                 for neighbor in num_neighbors:
-                    if neighbor.state == "S":
+                    if neighbor.state == "S" and random.random() < 0.005:
                         neighbor.state = "I"
                         neighbor.image = self.change_state()
 
@@ -148,7 +149,7 @@ class Person(Agent):
 
             #if self.min_speed != 0 and self.max_speed != 0 and self.timer2 == 0:
 
-            for site in self.population.objects.sites:
+'''            for site in self.population.objects.sites:
                 col = pygame.sprite.collide_mask(self, site)
                 if bool(col):
 
@@ -172,3 +173,4 @@ class Person(Agent):
                 if self.t_attempt_leave % 500 == 0:
                     self.site_behavior(behaviour="leave")
                     self.t_attempt_leave = 0
+                                                '''

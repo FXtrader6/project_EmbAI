@@ -1,6 +1,6 @@
 [base]
 swarm_type       = 'covid'
-n_agents = 20
+n_agents = 50
 object_location  = [500, 500]
 shelter1_loc  = [500, 500]
 shelter2_loc  = [700,700]
@@ -12,14 +12,14 @@ width  = 1000
 
 [population]
 convex    = false
-obstacles = true
-outside   = true
+obstacles = false
+outside   = false
 
 [person]
 #velocity force
 max_force         = 8.0
 #view of neighbor agents
-radius_view       = 20
+radius_view       =  15
 #weights for velocity forces
 alignment_weight  = 9.0
 cohesion_weight   = 5.0
