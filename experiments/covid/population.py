@@ -38,23 +38,24 @@ class Population(Swarm):
         # To Do
         # code snipet (not complete) to avoid initializing agents on obstacles
         # given some coordinates and obstacles in the environment, this repositions the agent
-        coordinates = generate_coordinates(self.screen)
-        print(coordinates)
-        if config["population"]["obstacles"]:  # you need to define this variable
-            for obj in self.objects.obstacles:
-                rel_coordinate = relative(
-                    coordinates, (obj.rect[0], obj.rect[1])
-                )
-                #print(rel_coordinate)
-                try:
-                    while obj.mask.get_at(rel_coordinate):
-                        coordinates = generate_coordinates(self.screen)
-                        print(coordinates)
-                        rel_coordinate = relative(
-                            coordinates, (obj.rect[0], obj.rect[1])
-                        )
+        for index, agent in enumerate(range(num_agents - 4)):
+            coordinates = generate_coordinates(self.screen)
+            print(coordinates)
+            if config["population"]["obstacles"]:  # you need to define this variable
+                for obj in self.objects.obstacles:
+                    rel_coordinate = relative(
+                        coordinates, (obj.rect[0], obj.rect[1])
+                    )
+                    # print(rel_coordinate)
+                    try:
+                        while obj.mask.get_at(rel_coordinate):
+                            coordinates = generate_coordinates(self.screen)
+                            print(coordinates)
+                            rel_coordinate = relative(
+                                coordinates, (obj.rect[0], obj.rect[1])
+                            )
 
-                except IndexError:
-                    pass
-        for index, agent in enumerate(range(num_agents)):
+                    except IndexError:
+                        pass
+
             self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index))

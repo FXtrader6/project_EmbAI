@@ -32,6 +32,7 @@ class Person(Agent):
         self.t_attempt_leave = 0
         self.t_leave_site = 0
         self.roach_timer = 0
+        self.initialization_timer = 0
         self.stop = False
         self.state = "susceptible"
         self.on_site = False
@@ -92,12 +93,12 @@ class Person(Agent):
 
 
     def update_actions(self) -> None:
-
             self.roach_timer += 1
-            #if self.roach_timer == 600:
-             #  self.image = image_with_rect( #change image
-              #      "experiments/covid/images/blue.png", [self.width, self.height])[0]
-            if random.random < 0.2:
+            if random.random() < 0.005 and self.roach_timer < 50:
+                self.state = "infectious"
+                self.image = self.change_state()
+
+            if self.state == "infectious" and random.random() < 0.2:
                 num_neighbors = (self.population.find_neighbors(self, config["person"]["radius_view"]))
                 for neighbor in num_neighbors:
                     neighbor.state= "infectious"
