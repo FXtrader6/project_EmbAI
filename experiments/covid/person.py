@@ -2,6 +2,7 @@ import numpy as np
 import pygame
 import random
 import time, threading
+import sys
 
 from simulation.agent import Agent
 from experiments.covid.config import config
@@ -106,6 +107,10 @@ class Person(Agent):
     def update_actions(self) -> None:
             #print(self.type)
             #infection timer to recover
+            self.init_timer+=1
+            if self.init_timer==500:
+                pygame.quit()
+                sys.exit()
 
             #self.population.add_point(self.listo)
 
