@@ -2,8 +2,8 @@
 swarm_type       = 'covid'
 n_agents = 100
 object_location  = [500, 500]
-shelter1_loc  = [500, 500]
-shelter2_loc  = [700,700]
+shelter1_loc  = [200, 500]
+shelter2_loc  = [800,500]
 
 [screen]
 frames = inf
@@ -12,7 +12,7 @@ width  = 1000
 
 [population]
 convex    = false
-obstacles = false
+obstacles = true
 outside   = false
 
 [person]
