@@ -108,7 +108,7 @@ class Person(Agent):
             #print(self.type)
             #infection timer to recover
             self.init_timer+=1
-            if self.init_timer==500:
+            if self.init_timer==1500:
                 pygame.quit()
                 sys.exit()
 
@@ -118,7 +118,7 @@ class Person(Agent):
                 self.rec_timer += 1
 
             # infection timer to recover
-            if self.rec_timer == 2000:
+            if self.rec_timer == 1000:
                 self.state = "R"
                 self.image = self.change_state()
                 self.rec_timer = 0
