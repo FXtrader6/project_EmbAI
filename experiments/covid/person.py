@@ -3,7 +3,7 @@ import pygame
 import random
 import time, threading
 import sys
-
+import time
 from simulation.agent import Agent
 from experiments.covid.config import config
 from simulation.utils import *
@@ -48,6 +48,9 @@ class Person(Agent):
         elif state == "I":
             self.image = image_with_rect( #change image
                     "experiments/covid/images/corona.png", [self.width, self.height])[0]
+        elif state == "M":
+            self.image = image_with_rect( #change image
+                    "experiments/covid/images/mask.png", [self.width, self.height])[0]
 
 
 
@@ -60,6 +63,9 @@ class Person(Agent):
         elif self.state == "S":
             image = image_with_rect(  # change image
                 "experiments/covid/images/blue.png", [self.width, self.height])[0]
+        elif self.state == "M":
+            image = image_with_rect(  # change image
+                "experiments/covid/images/mask.png", [self.width, self.height])[0]
         else:
             image = image_with_rect(  # change image
                 "experiments/covid/images/green.png", [self.width, self.height])[0]
@@ -108,9 +114,10 @@ class Person(Agent):
             #print(self.type)
             #infection timer to recover
             self.init_timer+=1
-            if self.init_timer==500:
-                pygame.quit()
-                sys.exit()
+            if self.init_timer==3000:
+                print("QUUUUUUUUUUUUUUUUUUUUUUUIT")
+                #pygame.quit()
+                #sys.exit()
 
             #self.population.add_point(self.listo)
 
@@ -124,10 +131,13 @@ class Person(Agent):
                 self.rec_timer = 0
 
             # infect susceptible neighbors
-            if self.state == "I" and random.random() < 0.20:
+            if self.state == "I":
                 num_neighbors = (self.population.find_neighbors(self, config["person"]["radius_view"]))
                 for neighbor in num_neighbors:
-                    if neighbor.state == "S":
+                    if neighbor.state == "S" and random.random() < 0.1:
+                        neighbor.state = "I"
+                        neighbor.image = self.change_state()
+                    elif neighbor.state == "M" and random.random() < 0.005:
                         neighbor.state = "I"
                         neighbor.image = self.change_state()
 

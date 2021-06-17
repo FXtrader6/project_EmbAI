@@ -58,8 +58,10 @@ class Population(Swarm):
                     except IndexError:
                         pass
 
-            if index < 90:
+            if index < 45:
              self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state= "S"))
+            elif index <90:
+                self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state="M"))
             else:
                 self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state="I"))
 
