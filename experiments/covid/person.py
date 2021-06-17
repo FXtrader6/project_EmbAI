@@ -124,7 +124,7 @@ class Person(Agent):
                 self.rec_timer = 0
 
             # infect susceptible neighbors
-            if self.state == "I" and random.random() < 0.20:
+            if self.state == "I" and random.random() < 0.1:
                 num_neighbors = (self.population.find_neighbors(self, config["person"]["radius_view"]))
                 for neighbor in num_neighbors:
                     if neighbor.state == "S":
