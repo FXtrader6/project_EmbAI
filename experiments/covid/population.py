@@ -57,10 +57,8 @@ class Population(Swarm):
                     ):
                         coordinates = generate_coordinates(self.screen)
 
-            if index < 45:
+            if index < 90:
              self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state= "S"))
-            elif index <90:
-                self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state="M"))
             else:
                 self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state="I"))
 
