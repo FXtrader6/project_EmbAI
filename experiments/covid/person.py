@@ -41,6 +41,7 @@ class Person(Agent):
         self.avoided_obstacles: bool = False
         self.state = state
         self.on_site = False
+
         self.n_agents = config["base"]["n_agents"]
 
         if state == "S":
@@ -117,7 +118,6 @@ class Person(Agent):
             # sys.exit()
 
         # self.population.add_point(self.listo)
-
         if self.state == "I":
             self.rec_timer += 1
 
@@ -168,8 +168,8 @@ class Person(Agent):
             if bool(col) and self.state == "S" or bool(col) and self.state == "M":
                 self.t_join += 1
 
-                if self.t_join == 35:
-                    if self.on_site is False:
+            if self.t_join == 35:
+                if self.on_site is False:
                         self.v *= 0
                         self.image = self.change_state()
                         self.on_site = True
@@ -177,7 +177,7 @@ class Person(Agent):
 
             if self.on_site is True:
                 self.t_vaccination += 1
-                if self.t_vaccination == 250:
+            if self.t_vaccination == 250:
                     self.state = "V"
                     self.v = self.set_velocity()
                     self.image = self.change_state()
