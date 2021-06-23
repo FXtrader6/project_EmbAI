@@ -8,10 +8,12 @@ from simulation.agent import Agent
 from experiments.covid.config import config
 from simulation.utils import *
 
+
 class Person(Agent):
     """ """
+
     def __init__(
-            self, pos, v, population, state, index: int, image:str = "experiments/covid/images/blue.png"
+            self, pos, v, population, state, index: int, image: str = "experiments/covid/images/blue.png"
     ) -> None:
         super(Person, self).__init__(
             pos,
@@ -32,7 +34,7 @@ class Person(Agent):
         self.population = population
         self.t_join = 0
         self.t_attempt_leave = 0
-        self.t_leave_site = 0
+        self.t_vaccination = 0
         self.rec_timer = 0
         self.init_timer = 0
         self.stop = False
@@ -41,39 +43,38 @@ class Person(Agent):
         self.on_site = False
         self.n_agents = config["base"]["n_agents"]
 
-
         if state == "S":
-            self.image = image_with_rect( #change image
-                    "experiments/covid/images/blue.png", [self.width, self.height])[0]
+            self.image = image_with_rect(  # change image
+                "experiments/covid/images/blue.png", [self.width, self.height])[0]
         elif state == "I":
-            self.image = image_with_rect( #change image
-                    "experiments/covid/images/corona.png", [self.width, self.height])[0]
+            self.image = image_with_rect(  # change image
+                "experiments/covid/images/corona.png", [self.width, self.height])[0]
         elif state == "M":
-            self.image = image_with_rect( #change image
-                    "experiments/covid/images/mask.png", [self.width, self.height])[0]
-
-
-
+            self.image = image_with_rect(  # change image
+                "experiments/covid/images/mask.png", [self.width, self.height])[0]
 
     def change_state(self) -> None:
 
         if self.state == "I":
-            image = image_with_rect( #change image
-                    "experiments/covid/images/corona.png", [self.width, self.height])[0]
+            image = image_with_rect(  # change image
+                "experiments/covid/images/corona.png", [self.width, self.height])[0]
         elif self.state == "S":
             image = image_with_rect(  # change image
                 "experiments/covid/images/blue.png", [self.width, self.height])[0]
         elif self.state == "M":
             image = image_with_rect(  # change image
                 "experiments/covid/images/mask.png", [self.width, self.height])[0]
+
+        elif self.state == "V":
+            image = image_with_rect(  # change image
+                "experiments/covid/images/shield3.png", [self.width, self.height])[0]
         else:
             image = image_with_rect(  # change image
                 "experiments/covid/images/green.png", [self.width, self.height])[0]
         return image
 
-
-    def site_behavior(self, behaviour = "join") -> None:
-        #print(self.type)
+    def site_behavior(self, behaviour="join") -> None:
+        # print(self.type)
         if behaviour == "join":
             num_neighbors = len(self.population.find_neighbors(self, config["cockroach"]["radius_view"]))
             if num_neighbors <= 5:
@@ -83,8 +84,8 @@ class Person(Agent):
             else:
                 p_join = 0.99
             if random.random() < p_join:
-               self.state = "still"
-               self.change_state()
+                self.state = "still"
+                self.change_state()
         elif behaviour == "leave":
             num_neighbors = len(self.population.find_neighbors(self, config["cockroach"]["radius_view"]))
             if num_neighbors <= 5:
@@ -99,97 +100,86 @@ class Person(Agent):
                 self.t_leave_site += 1
 
                 self.on_site = True
-                #self.timer = 0
+                # self.timer = 0
                 self.change_state()
 
-                #self.change_state(state="wander")
+                # self.change_state(state="wander")
 
-
-
-
-            #leave
-
+            # leave
 
     def update_actions(self) -> None:
-            #print(self.type)
-            #infection timer to recover
-            self.init_timer+=1
-            if self.init_timer==3000:
-                print("QUUUUUUUUUUUUUUUUUUUUUUUIT")
-                #pygame.quit()
-                #sys.exit()
+        # print(self.type)
+        # infection timer to recover
+        self.init_timer += 1
+        if self.init_timer == 1500:
+            print("QUUUUUUUUUUUUUUUUUUUUUUUIT")
+            # pygame.quit()
+            # sys.exit()
 
-            #self.population.add_point(self.listo)
+        # self.population.add_point(self.listo)
 
-            if self.state == "I":
-                self.rec_timer += 1
+        if self.state == "I":
+            self.rec_timer += 1
 
-            # infection timer to recover
-            if self.rec_timer == 2000:
-                self.state = "R"
+        # infection timer to recover
+        if self.rec_timer == 1000:
+            self.state = "R"
+            self.image = self.change_state()
+            self.rec_timer = 0
+
+        # infect susceptible neighbors
+        if self.state == "I":
+            num_neighbors = (self.population.find_neighbors(self, config["person"]["radius_view"]))
+            for neighbor in num_neighbors:
+                if neighbor.state == "S" and neighbor.on_site is False and random.random() < 0.1:
+                    neighbor.state = "I"
+                    neighbor.image = self.change_state()
+                elif neighbor.state == "M" and neighbor.on_site is False and random.random() < 0.005:
+                    neighbor.state = "I"
+                    neighbor.image = self.change_state()
+
+        ####avoid obstacles
+        for obstacle in self.population.objects.obstacles:
+            collide = pygame.sprite.collide_mask(self, obstacle)
+            if bool(collide):
+                # If boid gets stuck because when avoiding the obstacle ended up inside of the object,
+                # resets the position to the previous one and do a 180 degree turn back
+                if not self.avoided_obstacles:
+                    self.prev_pos = self.pos.copy()
+                    self.prev_v = self.v.copy()
+
+                else:
+                    self.pos = self.prev_pos.copy()
+                    self.v = self.prev_v.copy()
+
+                self.avoided_obstacles = True
+                self.avoid_obstacle()
                 self.image = self.change_state()
-                self.rec_timer = 0
+                return
+        self.prev_v = None
+        self.prev_pos = None
 
-            # infect susceptible neighbors
-            if self.state == "I":
-                num_neighbors = (self.population.find_neighbors(self, config["person"]["radius_view"]))
-                for neighbor in num_neighbors:
-                    if neighbor.state == "S" and random.random() < 0.1:
-                        neighbor.state = "I"
-                        neighbor.image = self.change_state()
-                    elif neighbor.state == "M" and random.random() < 0.005:
-                        neighbor.state = "I"
-                        neighbor.image = self.change_state()
+        self.avoided_obstacles = False
 
-            #avoid obstacles
-            for obstacle in self.population.objects.obstacles:
-                collide = pygame.sprite.collide_mask(self, obstacle)
-                if bool(collide):
-                    # If boid gets stuck because when avoiding the obstacle ended up inside of the object,
-                    # resets the position to the previous one and do a 180 degree turn back
-                    if not self.avoided_obstacles:
-                        self.prev_pos = self.pos.copy()
-                        self.prev_v = self.v.copy()
+        #####vacination
 
-                    else:
-                        self.pos = self.prev_pos.copy()
-                        self.v = self.prev_v.copy()
+        for site in self.population.objects.sites:
+            col = pygame.sprite.collide_mask(self, site)
+            if bool(col) and self.state == "S" or bool(col) and self.state == "M":
+                self.t_join += 1
 
-                    self.avoided_obstacles = True
-                    self.avoid_obstacle()
+                if self.t_join == 35:
+                    if self.on_site is False:
+                        self.v *= 0
+                        self.image = self.change_state()
+                        self.on_site = True
+                        self.t_join = 0
+
+            if self.on_site is True:
+                self.t_vaccination += 1
+                if self.t_vaccination == 250:
+                    self.state = "V"
+                    self.v = self.set_velocity()
                     self.image = self.change_state()
-                    return
-            self.prev_v = None
-            self.prev_pos = None
-
-            self.avoided_obstacles = False
-
-            #
-
-            #if self.min_speed != 0 and self.max_speed != 0 and self.timer2 == 0:
-
-'''            for site in self.population.objects.sites:
-                col = pygame.sprite.collide_mask(self, site)
-                if bool(col):
-
-                    self.t_join += 1
-
-                    if self.t_join % 35 == 0:
-                        if self.on_site == False:
-                            self.site_behavior()
-                            self.t_join = 0
-
-            if self.t_leave_site >= 1:
-                self.t_leave_site +=1
-                #print(self.timer3)
-            if self.t_leave_site > 250:
-                self.on_site = False
-                self.t_leave_site = 0
-
-            if self.state == "still":
-                self.t_attempt_leave += 1
-                #print(self.timer2)
-                if self.t_attempt_leave % 500 == 0:
-                    self.site_behavior(behaviour="leave")
-                    self.t_attempt_leave = 0
-                                                '''
+                    self.t_vaccination = 0
+                    self.on_site = False

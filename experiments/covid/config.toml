@@ -12,8 +12,8 @@ width  = 1000
 
 [population]
 convex    = false
-obstacles = false
-outside   = false
+obstacles = true
+outside   = true
 
 [person]
 #velocity force

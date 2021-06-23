@@ -22,16 +22,16 @@ class Population(Swarm):
             object_loc = config["base"]["object_location"]
 
             if config["population"]["outside"]:
-                scale = [300, 300]
+                scale = [200, 200]
             else:
                 scale = [800, 800]
 
-            filename = (
-                "experiments/covid/images/env.png"
+            hospital = (
+                "experiments/covid/images/hos.png"
             )
 
             self.objects.add_object(
-                file=filename, pos=object_loc, scale=scale, obj_type="obstacle"
+                file=hospital, pos=object_loc, scale=scale, obj_type="site"
             )
             min_x, max_x = area(object_loc[0], scale[0])
             min_y, max_y = area(object_loc[1], scale[1])
@@ -41,22 +41,21 @@ class Population(Swarm):
         for index, agent in enumerate(range(num_agents)):
             coordinates = generate_coordinates(self.screen)
             #print(coordinates)
-            if config["population"]["obstacles"]:  # you need to define this variable
-                for obj in self.objects.obstacles:
-                    rel_coordinate = relative(
-                        coordinates, (obj.rect[0], obj.rect[1])
-                    )
-                    # print(rel_coordinate)
-                    try:
-                        while obj.mask.get_at(rel_coordinate):
-                            coordinates = generate_coordinates(self.screen)
-                            print(coordinates)
-                            rel_coordinate = relative(
-                                coordinates, (obj.rect[0], obj.rect[1])
-                            )
-
-                    except IndexError:
-                        pass
+            if config["population"]["obstacles"]:
+                if config["population"]["outside"]:
+                    while (
+                            max_x >= coordinates[0] >= min_x
+                            and max_y >= coordinates[1] >= min_y
+                    ):
+                        coordinates = generate_coordinates(self.screen)
+                else:
+                    while (
+                            coordinates[0] >= max_x
+                            or coordinates[0] <= min_x
+                            or coordinates[1] >= max_y
+                            or coordinates[1] <= min_y
+                    ):
+                        coordinates = generate_coordinates(self.screen)
 
             if index < 45:
              self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state= "S"))

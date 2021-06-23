@@ -20,8 +20,6 @@ def _plot_covid(data) -> None:
     ----
         data:
     """
-    now = datetime.now()
-    current_time = now.strftime("%H-%M-%S")
     output_name = "experiments/covid/plots/Covid-19-SIR%s.png" % time.strftime(
         "-%m.%d.%y-%H-%M-%S", time.localtime()
     )
@@ -30,7 +28,8 @@ def _plot_covid(data) -> None:
     plt.plot(data["I"], label="Infected", color=(1, 0, 0))  # Red
     plt.plot(data["R"], label="Recovered", color=(0, 1, 0))  # Green
     plt.plot(data["M"], label="Masked", color=(0, 0, 1))  # Blue
-    plt.title("Covid-19 Simulation S-I-R-M")
+    plt.plot(data["V"], label="Vaccinated", color=(0.5, 0.5, 0.5))  # Orange
+    plt.title("Covid-19 Simulation S-I-R-M-V")
     plt.xlabel("Time")
     plt.ylabel("Population")
     plt.legend()
