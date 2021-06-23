@@ -1,5 +1,7 @@
 from experiments.covid.config import config
 from experiments.covid.person import Person
+from simulation.agent import Agent
+
 from simulation.swarm import Swarm
 from simulation.utils import *
 import numpy as np
@@ -64,4 +66,36 @@ class Population(Swarm):
                 self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state="M"))
             else:
                 self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state="I"))
+
+    
+
+
+            # code added for social distancing
+
+    def find_neighbor_velocity_center_separation(self, person: Agent, neighbors: list) -> Tuple[float, float, float]:
+            """
+                Compute the total averaged sum of the neighbors' velocity, position and distance with regards to the considered
+                agent
+                :param boid: Agent
+                :param neighbors: list
+
+            """
+            neighbor_sum_v, neighbor_sum_pos, separate = (
+                np.zeros(2),
+                np.zeros(2),
+                np.zeros(2),
+            )
+
+            for neigh in neighbors:
+                neighbor_sum_v += neigh.v
+                neighbor_sum_pos += neigh.pos
+                difference = (
+                        person.pos - neigh.pos
+                )  # compute the distance vector (v_x, v_y)
+                difference /= norm(
+                    difference
+                )  # normalize to unit vector with respect to its maginiture
+                separate += difference  # add the influences of all neighbors up
+
+            return neighbor_sum_v / len(neighbors), neighbor_sum_pos / len(neighbors), separate / len(neighbors)
 
