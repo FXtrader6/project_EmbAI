@@ -161,6 +161,23 @@ class Person(Agent):
 
         self.avoided_obstacles = False
 
+        # code for social distance below
+
+        align_force, cohesion_force, separate_force = self.neighbor_forces()
+
+        # combine the vectors in one
+        steering_force = (
+                align_force * config["person"]["alignment_weight"]
+                + cohesion_force * config["person"]["cohesion_weight"]
+                + separate_force * config["person"]["separation_weight"]
+        )
+
+        # adjust the direction of the boid
+        self.steering += truncate(
+            steering_force / self.mass, config["person"]["max_force"]
+        )
+
+
         #####vacination
 
         for site in self.population.objects.sites:
@@ -183,3 +200,54 @@ class Person(Agent):
                     self.image = self.change_state()
                     self.t_vaccination = 0
                     self.on_site = False
+
+
+
+    # added code for social distance:
+    def neighbor_forces(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+            """
+            Find the neighbors of the agent and compute the total align force (force required to align agent with its neighbors'
+            total force), cohesion force (force required to move the agent towards the center of mass of its neighbors)
+            and separate force considering the total amount of neighbors close to the agent
+            """
+            # find all the neighbors of a boid based on its radius view
+            neighbors = self.population.find_neighbors(self, config["person"]["radius_view"])
+
+            #
+            # if there are neighbors, estimate the influence of their forces
+
+            if neighbors:
+                pre_align_force, pre_cohesion_force, separate_force = self.population.find_neighbor_velocity_center_separation(self,
+                                                                                                                        neighbors)
+                align_force = self.align(pre_align_force)
+                cohesion_force = self.cohesion(pre_cohesion_force)
+            #
+            else:
+                align_force, cohesion_force, separate_force = (
+                    np.zeros(2),
+                    np.zeros(2),
+                    np.zeros(2)
+                )
+            return align_force, cohesion_force, separate_force
+
+    def align(self, neighbor_force: np.ndarray):
+        """
+        Function to align the agent in accordance to neighbor velocity
+
+        Args:
+            neighbor_force (np.ndarray):
+
+        """
+        return normalize(neighbor_force - self.v)
+
+    def cohesion(self, neighbor_center):
+        """
+        Function to move the agent towards the center of mass of its neighbors
+
+        Args:
+        ----
+            neighbor_center:
+
+        """
+        force = neighbor_center - self.pos
+        return normalize(force - self.v)
