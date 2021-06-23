@@ -11,6 +11,7 @@ class Population(Swarm):
     def __init__(self, screen_size) -> None:
         super(Population, self).__init__(screen_size)
         self.object_loc = config["population"]["outside"]
+        self.wow = True
 
     def initialize(self, num_agents: int) -> None:
         """
@@ -22,45 +23,86 @@ class Population(Swarm):
             object_loc = config["base"]["object_location"]
 
             if config["population"]["outside"]:
-                scale = [200, 200]
+                scale = [150, 150]
             else:
                 scale = [800, 800]
 
+            # shelter locations and sizes
+            scale_for_building1 = [300, 600]
+            building1loc = config["base"]["shelter1_loc"]
+            scale_for_building2 = [300, 600]
+            building2loc = config["base"]["shelter2_loc"]
+
             hospital = (
                 "experiments/covid/images/hos.png"
+                # if config["aggregation"]["convex"]
+                # else "experiments/flocking/images/redd.png"
+            )
+            building1 = (
+                "experiments/covid/images/new1.png"
+                # if config["aggregation"]["convex"]
+                # else "experiments/flocking/images/redd.png"
             )
 
+            building2 = (
+                "experiments/covid/images/new2.png"
+                # if config["aggregation"]["convex"]
+                # else "experiments/flocking/images/redd.png"
+            )
             self.objects.add_object(
                 file=hospital, pos=object_loc, scale=scale, obj_type="site"
             )
-            min_x, max_x = area(object_loc[0], scale[0])
-            min_y, max_y = area(object_loc[1], scale[1])
+            self.objects.add_object(
+                file=building2, pos=building1loc, scale=scale_for_building1, obj_type="obstacle"
+            )
+            self.objects.add_object(
+                file=building1, pos=building2loc, scale=scale_for_building2, obj_type="obstacle"
+            )
+            min_x1, max_x1 = area(building1loc[0], scale_for_building1[0])
+            min_y1, max_y1 = area(building1loc[1], scale_for_building1[1])
+            min_x2, max_x2 = area(building2loc[0], scale_for_building2[0])
+            min_y2, max_y2 = area(building2loc[1], scale_for_building2[1])
         # To Do
         # code snipet (not complete) to avoid initializing agents on obstacles
         # given some coordinates and obstacles in the environment, this repositions the agent
         for index, agent in enumerate(range(num_agents)):
-            coordinates = generate_coordinates(self.screen)
-            #print(coordinates)
-            if config["population"]["obstacles"]:
-                if config["population"]["outside"]:
-                    while (
-                            max_x >= coordinates[0] >= min_x
-                            and max_y >= coordinates[1] >= min_y
-                    ):
-                        coordinates = generate_coordinates(self.screen)
-                else:
-                    while (
-                            coordinates[0] >= max_x
-                            or coordinates[0] <= min_x
-                            or coordinates[1] >= max_y
-                            or coordinates[1] <= min_y
-                    ):
-                        coordinates = generate_coordinates(self.screen)
+            coordinates1 = generate_coordinates(self.screen)
+            coordinates2 = generate_coordinates(self.screen)
+            # if obstacles present re-estimate the corrdinates
+            while (
+                    coordinates1[0] >= max_x1
+                    or coordinates1[0] <= min_x1
+                    or coordinates1[1] >= max_y1
+                    or coordinates1[1] <= min_y1
+                    or coordinates2[0] >= max_x2 -20
+                    or coordinates2[0] <= min_x2 +20
+                    or coordinates2[1] >= max_y2
+                    or coordinates2[1] <= min_y2
+            ):
+                coordinates1 = generate_coordinates(self.screen)
+                coordinates2 = generate_coordinates(self.screen)
 
             if index < 45:
-             self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state= "S"))
+             self.add_agent(Person(pos=np.array(coordinates1), v=None, population=self, index=index, state= "S"))
             elif index <90:
-                self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state="M"))
+                self.add_agent(Person(pos=np.array(coordinates2), v=None, population=self, index=index, state="M"))
+            elif index < 95:
+                self.add_agent(Person(pos=np.array(coordinates1), v=None, population=self, index=index, state="I"))
             else:
-                self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state="I"))
+                self.add_agent(Person(pos=np.array(coordinates2), v=None, population=self, index=index, state="I"))
 
+            '''if config["population"]["obstacles"]:  # you need to define this variable
+                for obj in self.objects.obstacles:
+                    rel_coordinate = relative(
+                        coordinates, (obj.rect[0], obj.rect[1])
+                    )
+                    # print(rel_coordinate)
+                    try:
+                        while obj.mask.get_at(rel_coordinate):
+                            coordinates = generate_coordinates(self.screen)
+                            rel_coordinate = relative(
+                                coordinates, (obj.rect[0], obj.rect[1])
+                            )
+
+                    except IndexError:
+                        pass'''
