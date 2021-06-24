@@ -41,6 +41,8 @@ class Swarm(pygame.sprite.Sprite):
         self.points_to_plot = {"S" : [],"I": [],"R": [], "M": []}
         self.datapoints: list = []
 
+    # plot = {"S" : [],"I": [],"R": []}
+
     def add_agent(self, agent: Agent) -> None:
         """
         Adds an agent to the pool of agents in the swarm
@@ -115,9 +117,12 @@ class Swarm(pygame.sprite.Sprite):
         # Count current numbers
         values = {"S": 0, "I": 0, "R": 0, "M": 0}
         for state in lst:
+
             values[state] += 1
+            print(values)
 
         for x in values:
+            print(type(self.points_to_plot))
             self.points_to_plot[x].append(values[x])
 
     def update(self) -> None:
@@ -126,7 +131,7 @@ class Swarm(pygame.sprite.Sprite):
         points to be plotted. Finally, check if every agent is within the screen.
         """
         # update the movement
-        self.datapoints = []
+        self.datapoints = ["S", "I", "R"]
         for agent in self.agents:
             if agent.state == "S":
                 self.datapoints.append("S")
@@ -138,6 +143,7 @@ class Swarm(pygame.sprite.Sprite):
                 self.datapoints.append("R")
         for agent in self.agents:
             agent.update_actions()
+            # self.datapoints.append("S")
 
         if self.datapoints:
             self.add_point(self.datapoints)
