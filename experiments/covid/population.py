@@ -82,14 +82,22 @@ class Population(Swarm):
                 coordinates1 = generate_coordinates(self.screen)
                 coordinates2 = generate_coordinates(self.screen)
 
-            if index < 45:
-             self.add_agent(Person(pos=np.array(coordinates1), v=None, population=self, index=index, state= "S"))
-            elif index <90:
+            if index < 12:
+                self.add_agent(Person(pos=np.array(coordinates1), v=None, population=self, index=index, state="V"))
+            elif index < 25:
+                self.add_agent(Person(pos=np.array(coordinates2), v=None, population=self, index=index, state="V"))
+            elif index < 58:
+                self.add_agent(Person(pos=np.array(coordinates1), v=None, population=self, index=index, state="S"))
+            elif index < 90:
                 self.add_agent(Person(pos=np.array(coordinates2), v=None, population=self, index=index, state="M"))
             elif index < 95:
                 self.add_agent(Person(pos=np.array(coordinates1), v=None, population=self, index=index, state="I"))
             else:
                 self.add_agent(Person(pos=np.array(coordinates2), v=None, population=self, index=index, state="I"))
+
+            # 12,25, 58 ,90, 95
+            # 25,50, 70, 90 ,95
+            # 38, 75, 83, 90, 95
 
             '''if config["population"]["obstacles"]:  # you need to define this variable
                 for obj in self.objects.obstacles:

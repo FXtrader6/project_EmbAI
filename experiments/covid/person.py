@@ -53,6 +53,9 @@ class Person(Agent):
         elif state == "M":
             self.image = image_with_rect(  # change image
                 "experiments/covid/images/mask.png", [self.width, self.height])[0]
+        elif state == "V":
+            self.image = image_with_rect(  # change image
+                "experiments/covid/images/shield3.png", [self.width, self.height])[0]
 
     def change_state(self) -> None:
 
@@ -170,10 +173,10 @@ class Person(Agent):
 
             if self.t_join == 35:
                 if self.on_site is False:
-                        self.v *= 0
-                        self.image = self.change_state()
-                        self.on_site = True
-                        self.t_join = 0
+                    self.v *= 0
+                    self.image = self.change_state()
+                    self.on_site = True
+                    self.t_join = 0
 
             if self.on_site is True:
                 self.t_vaccination += 1
