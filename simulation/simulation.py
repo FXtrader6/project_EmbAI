@@ -49,7 +49,7 @@ def _plot_aggregation() -> None:
 
 
 """
-General simulation pipeline, suitable for all experiments 
+General simulation pipeline, suitable for all experiments
 """
 
 
@@ -143,7 +143,7 @@ class Simulation:
             while self.running:
                 # init = time.time()
                 self.simulate()
-                # print(time.time() - init)
+                #print(time.time() - init)
 
             self.plot_simulation()
         else:

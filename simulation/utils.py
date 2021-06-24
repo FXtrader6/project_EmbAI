@@ -105,11 +105,11 @@ def normalize(vector: np.ndarray) -> np.ndarray:
     -----
         vector (np.array):
     """
-    n = norm(vector)
+    n = norm(vector) #uses vector L2 norm(length) for regularization
     if n < 1e-13:
         return np.zeros(2)
     else:
-        return np.array(vector) / n
+        return np.array(vector) / n #average length or magnitude of vectors
 
 
 def truncate(vector: np.ndarray, max_length: float, min_length: float = None) -> np.ndarray:
@@ -136,7 +136,7 @@ def norm(vector: np.ndarray) -> float:
     Args:
         vector (numpy.ndarray):
     """
-    return math.sqrt(vector[0] ** 2 + vector[1] ** 2)
+    return math.sqrt(vector[0] ** 2 + vector[1] ** 2) #vector L2 norm
 
 
 def speedvector(max_speed: int) -> List[int]:
