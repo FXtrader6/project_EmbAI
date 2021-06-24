@@ -53,6 +53,9 @@ class Person(Agent):
         elif state == "M":
             self.image = image_with_rect(  # change image
                 "experiments/covid/images/mask.png", [self.width, self.height])[0]
+        elif state == "V":
+            self.image = image_with_rect(  # change image
+                "experiments/covid/images/shield3.png", [self.width, self.height])[0]
 
     def change_state(self) -> None:
 
