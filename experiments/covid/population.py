@@ -66,3 +66,6 @@ class Population(Swarm):
             else:
                 self.add_agent(Person(pos=np.array(coordinates), v=None, population=self, index=index, state="I"))
 
+#25, 58 , 90
+#50, 70, 90
+#75, 83, 90
